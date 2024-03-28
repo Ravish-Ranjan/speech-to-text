@@ -5,33 +5,71 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<title>Document</title>
 	</head>
-	<body>
+	<body style="display: grid">
 		<textarea name="" id="output" cols="30" rows="10"></textarea>
-		<button type="button" id="start">Start</button>
-		<button type="button" id="stop">Stop</button>
+		<button
+			type="button"
+			id="startbtn"
+			onclick="start()"
+			style="display: block"
+		>
+			<img
+				src="https://api.iconify.design/material-symbols:mic-outline-rounded.svg?color=%2300ff00"
+				alt=""
+			/>
+		</button>
+		<button
+			type="button"
+			id="stopbtn"
+			onclick="stop()"
+			style="display: none"
+		>
+			<img
+				src="https://api.iconify.design/material-symbols:mic-off-outline-rounded.svg?color=%23ff0000"
+				alt=""
+			/>
+		</button>
 		<script>
 			const recog = new webkitSpeechRecognition();
-			recog.lang = "en-US";
+			recog.lang = "en-IN";
 			recog.interimResults = true;
 			recog.continuous = true;
 
-			const startBtn = document.getElementById("start");
-			const stopBtn = document.getElementById("stop");
+			let isListening = false;
+			let lastSpeechTime = 0;
 
-			startBtn.addEventListener("click", () => {
+			function start() {
 				recog.start();
-			});
-
-			stopBtn.addEventListener("click", () => {
+				startbtn.style.display = "none";
+				stopbtn.style.display = "block";
+			}
+			function stop() {
 				recog.stop();
-			});
+				startbtn.style.display = "block";
+				stopbtn.style.display = "none";
+			}
 
 			recog.onresult = (event) => {
-				output.value = event.results[event.results.length - 1][0].transcript;
+				output.value =
+					event.results[event.results.length - 1][0].transcript;
+				if (output.value.trim() == "stop voice recognition") {
+					stop();
+				}
 			};
 
 			navigator.mediaDevices.getUserMedia({ audio: true });
-			navigator.mediaDevices.getDisplayMedia({ video: true });
+
+			function checkSpeechTimeout() {
+				if (isListening && Date.now() - lastSpeechTime > 2000) {
+					recog.abort();
+					stop();
+					isListening = false;
+					console.log("Speech recognition stopped due to inactivity");
+				} else {
+					setTimeout(checkSpeechTimeout, 100); // Check again after 100ms
+				}
+			}
+			checkSpeechTimeout();
 		</script>
 	</body>
 </html>

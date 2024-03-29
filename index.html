@@ -3,73 +3,32 @@
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link rel="stylesheet" href="style.css" />
 		<title>Document</title>
 	</head>
-	<body style="display: grid">
-		<textarea name="" id="output" cols="30" rows="10"></textarea>
+	<body>
+		<input
+			type="text"
+			name=""
+			id="output"
+			placeholder="Type of click the mic and start speeking"
+		/>
 		<button
 			type="button"
 			id="startbtn"
 			onclick="start()"
-			style="display: block"
+			title="start speeking..."
 		>
-			<img
-				src="https://api.iconify.design/material-symbols:mic-outline-rounded.svg?color=%2300ff00"
-				alt=""
-			/>
+			<img src="mic_on.svg" alt="On" />
 		</button>
 		<button
 			type="button"
 			id="stopbtn"
 			onclick="stop()"
-			style="display: none"
+			title="stop speeking..."
 		>
-			<img
-				src="https://api.iconify.design/material-symbols:mic-off-outline-rounded.svg?color=%23ff0000"
-				alt=""
-			/>
+			<img src="mic_off.svg" alt="Off" />
 		</button>
-		<script>
-			const recog = new webkitSpeechRecognition();
-			recog.lang = "en-IN";
-			recog.interimResults = true;
-			recog.continuous = true;
-
-			let isListening = false;
-			let lastSpeechTime = 0;
-
-			function start() {
-				recog.start();
-				startbtn.style.display = "none";
-				stopbtn.style.display = "block";
-			}
-			function stop() {
-				recog.stop();
-				startbtn.style.display = "block";
-				stopbtn.style.display = "none";
-			}
-
-			recog.onresult = (event) => {
-				output.value =
-					event.results[event.results.length - 1][0].transcript;
-				if (output.value.trim() == "stop voice recognition") {
-					stop();
-				}
-			};
-
-			navigator.mediaDevices.getUserMedia({ audio: true });
-
-			function checkSpeechTimeout() {
-				if (isListening && Date.now() - lastSpeechTime > 2000) {
-					recog.abort();
-					stop();
-					isListening = false;
-					console.log("Speech recognition stopped due to inactivity");
-				} else {
-					setTimeout(checkSpeechTimeout, 100); // Check again after 100ms
-				}
-			}
-			checkSpeechTimeout();
-		</script>
+		<script src="script.js"></script>
 	</body>
 </html>
